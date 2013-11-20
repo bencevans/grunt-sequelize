@@ -19,14 +19,16 @@ module.exports = function(grunt) {
 
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
-      migrationsPath: process.cwd() + '/migrations'
+      migrationsPath: process.cwd() + '/migrations',
+      logging: false
     });
 
     if(cmd === 'migrate') {
       var done = this.async();
 
       var sequelize       = new Sequelize(options.database, options.username, options.password, options);
-      var migrator        = sequelize.getMigrator(options);
+      var migratorOptions = { path: options.migrationsPath }
+      var migrator        = sequelize.getMigrator(migratorOptions);
 
       sequelize.migrate().done(done);
 
