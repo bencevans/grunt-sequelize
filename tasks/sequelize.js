@@ -8,43 +8,32 @@
 
 'use strict';
 
+var Sequelize = require('sequelize');
+
 module.exports = function(grunt) {
 
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerMultiTask('sequelize', 'Sequelize migrations from Grunt', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
+  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd) {
+
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+      environment: process.env.NODE_ENV || 'development',
+      migrationsPath: process.cwd() + '/migrations'
     });
 
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+    if(cmd === 'migrate') {
+      var done = this.async();
 
-      // Handle options.
-      src += options.punctuation;
+      var sequelize       = new Sequelize(options.database, options.username, options.password, options);
+      var migrator        = sequelize.getMigrator(options);
 
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
+      sequelize.migrate().done(done);
 
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
-    });
+    } else {
+      throw new Error('Unknown grunt-sequelize command: ' + cmd);
+    }
+
   });
 
 };
