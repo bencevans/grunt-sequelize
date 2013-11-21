@@ -12,7 +12,7 @@ grunt.initConfig({
   sequelize: {
     options: {
       dialect: 'sqlite',
-      storage: 'path/to/database.sqlite'
+      storage: 'test/tmp.sqlite'
     }
   }
 });
