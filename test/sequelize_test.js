@@ -47,7 +47,6 @@ describe('grunt-sequelize', function() {
         done();
       });
     });
-    // grunt.util.spawn({ grunt: true, args: ['sequelize:undo'] }, function() {}) 
   });
 
 });

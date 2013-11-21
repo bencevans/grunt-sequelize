@@ -38,7 +38,8 @@
     "pg": "~2.8.2",
     "istanbul": "~0.1.45",
     "mocha": "~1.14.0",
-    "sqlite3": "~2.1.19"
+    "sqlite3": "~2.1.19",
+    "coveralls": "~2.3.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
