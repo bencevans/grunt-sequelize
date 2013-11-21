@@ -38,8 +38,10 @@ describe('grunt-sequelize', function() {
 
       });
     });
-    describe('with a migration argument');
+    describe('with a migration argument', function() {
+    });
   });
+
 
   describe('sequelize:undo', function() {
     it('should undo the last migration', function(done) {
