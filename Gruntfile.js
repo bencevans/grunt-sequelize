@@ -6,17 +6,17 @@
  * Licensed under the MIT license.
  */
 
-'use strict';
+ 'use strict';
 
-module.exports = function(grunt) {
+ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
     jshint: {
       all: [
-        'Gruntfile.js',
-        'tasks/*.js',
-        'tests/*.js',
+      'Gruntfile.js',
+      'tasks/*.js',
+      'tests/*.js',
       ],
       options: {
         jshintrc: '.jshintrc',
@@ -31,11 +31,9 @@ module.exports = function(grunt) {
     // Configuration to be run (and then tested).
     sequelize: {
       options:{
-        "dialect": "postgres",
-        "username": "postgres",
-        "password": null,
-        "database": "webcast_io_development",
-        "host": "127.0.0.1"
+        dialect: 'sqlite',
+        storage: 'test/tmp.sqlite',
+        migrationsPath: 'test/migrations'
       }
     },
 
