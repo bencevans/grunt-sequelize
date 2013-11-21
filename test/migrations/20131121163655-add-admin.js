@@ -1,7 +1,7 @@
 module.exports = {
   up: function(migration, DataTypes, done) {
 
-    migration.addColumn('users', 'admin', DataTypes.BOOL).complete(done);
+    migration.addColumn('users', 'admin', DataTypes.BOOLEAN).complete(done);
 
   },
   down: function(migration, DataTypes, done) {
