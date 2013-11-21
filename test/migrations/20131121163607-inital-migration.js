@@ -1,3 +1,6 @@
+
+'use strict';
+
 module.exports = {
   up: function(migration, DataTypes, done) {
 
@@ -11,4 +14,4 @@ module.exports = {
     migration.dropTable('nameOfTheExistingTable').complete(done);
 
   }
-}
+};

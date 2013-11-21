@@ -1,3 +1,6 @@
+
+'use strict';
+
 module.exports = {
   up: function(migration, DataTypes, done) {
 
@@ -9,4 +12,4 @@ module.exports = {
     migration.removeColumn('users', 'admin').complete(done);
 
   }
-}
+};

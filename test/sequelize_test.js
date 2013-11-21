@@ -1,9 +1,13 @@
 'use strict';
 
-var assert = require('assert');
-var grunt  = require('grunt');
-var exec   = require('child_process').exec
+var assert    = require('assert');
+var grunt     = require('grunt');
+var Sequelize = require('sequelize');
 
+var sequelize = new Sequelize('database', 'username', 'password', {
+  dialect: 'sqlite',
+  storage: 'test/tmp.sqlite'
+});
 
 grunt.task.init = function() {};
 
@@ -27,7 +31,7 @@ describe('grunt-sequelize', function() {
       it('should migrate to the top migration', function(done) {
 
         grunt.util.spawn({ grunt: true, args: ['sequelize:migrate'] }, function(error, result) {
-          console.log(result)
+          console.log(result);
           assert.equal(result.code, 0);
           done();
         });
@@ -40,7 +44,7 @@ describe('grunt-sequelize', function() {
   describe('sequelize:undo', function() {
     it('should undo the last migration', function(done) {
       grunt.util.spawn({ grunt: true, args: ['sequelize:undo'] }, function(error, result) {
-        console.log(result)
+        console.log(result);
         assert.equal(result.code, 0);
         done();
       });

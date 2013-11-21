@@ -6,21 +6,29 @@
  * Licensed under the MIT license.
  */
 
- 'use strict';
+'use strict';
 
- module.exports = function(grunt) {
+module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
     jshint: {
-      all: [
-      'Gruntfile.js',
-      'tasks/*.js',
-      'tests/*.js',
-      ],
+
       options: {
         jshintrc: '.jshintrc',
+        ignores: [
+          '*.min.js',
+          'node_modules/**/*',
+          'public/bower_components/**/*',
+          'dist/**/*',
+          'coverage/**/*'
+        ]
       },
+      all: [
+        '*.js',
+        '**/*.js'
+      ]
+
     },
 
     // Before generating any new files, remove any previously-created files.
