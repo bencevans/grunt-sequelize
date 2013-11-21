@@ -18,14 +18,15 @@ module.exports = function(grunt) {
 
   grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd, done) {
 
+
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
-      migrationsPath: process.cwd() + '/migrations',
+      migrationsPath: './migrations',
       logging: false
     });
 
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
-    var migratorOptions = { path: options.migrationsPath };
+    var migratorOptions = { path: __dirname + '/../' + options.migrationsPath };
     var migrator        = sequelize.getMigrator(migratorOptions);
 
     if(cmd === 'migrate') {
