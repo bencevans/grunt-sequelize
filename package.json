@@ -37,7 +37,8 @@
     "grunt": "~0.4.1",
     "pg": "~2.8.2",
     "istanbul": "~0.1.45",
-    "mocha": "~1.14.0"
+    "mocha": "~1.14.0",
+    "sqlite3": "~2.1.19"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
