@@ -9,6 +9,7 @@
 'use strict';
 
 var Sequelize = require('sequelize');
+var _         = Sequelize.Utils._;
 
 module.exports = function(grunt) {
 
@@ -23,14 +24,29 @@ module.exports = function(grunt) {
       logging: false
     });
 
+    var sequelize       = new Sequelize(options.database, options.username, options.password, options);
+    var migratorOptions = { path: options.migrationsPath };
+
     if(cmd === 'migrate') {
       var done = this.async();
 
-      var sequelize       = new Sequelize(options.database, options.username, options.password, options);
-      var migratorOptions = { path: options.migrationsPath }
       var migrator        = sequelize.getMigrator(migratorOptions);
 
       sequelize.migrate().done(done);
+
+    } else if(cmd === 'undo') {
+
+      sequelize.migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
+        Meta.find({ order: 'id DESC' }).success(function(meta) {
+          if (meta) {
+            migrator = sequelize.getMigrator(_.extend(migratorOptions, meta), true);
+          }
+
+          migrator.migrate({ method: 'down' }).success(function() {
+            process.exit(0);
+          });
+        });
+      });
 
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
