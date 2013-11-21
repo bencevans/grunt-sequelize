@@ -16,7 +16,7 @@ module.exports = function(grunt) {
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd) {
+  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd, done) {
 
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
@@ -26,11 +26,10 @@ module.exports = function(grunt) {
 
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
     var migratorOptions = { path: options.migrationsPath };
+    var migrator        = sequelize.getMigrator(migratorOptions);
 
     if(cmd === 'migrate') {
       var done = this.async();
-
-      var migrator        = sequelize.getMigrator(migratorOptions);
 
       sequelize.migrate().done(done);
 
@@ -43,7 +42,7 @@ module.exports = function(grunt) {
           }
 
           migrator.migrate({ method: 'down' }).success(function() {
-            process.exit(0);
+            done();
           });
         });
       });
