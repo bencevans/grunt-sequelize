@@ -2,12 +2,6 @@
 
 var assert    = require('assert');
 var grunt     = require('grunt');
-var Sequelize = require('sequelize');
-
-var sequelize = new Sequelize('database', 'username', 'password', {
-  dialect: 'sqlite',
-  storage: 'test/tmp.sqlite'
-});
 
 grunt.task.init = function() {};
 

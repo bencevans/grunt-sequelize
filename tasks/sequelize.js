@@ -30,7 +30,7 @@ module.exports = function(grunt) {
     var migrator        = sequelize.getMigrator(migratorOptions);
 
     if(cmd === 'migrate') {
-      var done = this.async();
+      done = this.async();
 
       sequelize.migrate().done(done);
 
