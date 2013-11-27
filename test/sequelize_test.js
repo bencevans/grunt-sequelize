@@ -34,7 +34,12 @@ describe('grunt-sequelize', function() {
 
         grunt.util.spawn({ grunt: true, args: ['sequelize:migrate'] }, function(error, result) {
           assert.equal(result.code, 0);
-          done();
+          var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
+          migrationVersionEmitter.on('success', function(serverMigrationId) {
+            assert.equal(serverMigrationId, '20131121163655');
+            done();
+          });
+          migrationVersionEmitter.on('error', done);
         });
 
       });
@@ -60,10 +65,10 @@ describe('grunt-sequelize', function() {
           assert.equal(result.code, 0);
           var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
           migrationVersionEmitter.on('success', function(serverMigrationId) {
-            assert.equal(serverMigrationId, '20131121163655');
+            assert.equal(serverMigrationId, '20131121163607');
+            done();
           });
           migrationVersionEmitter.on('error', done);
-          done();
         });
       });
     });
