@@ -2,19 +2,27 @@
 
 var assert    = require('assert');
 var grunt     = require('grunt');
+var Sequelize = require('sequelize');
 
 grunt.task.init = function() {};
+
+var options = {
+  dialect: 'sqlite',
+  storage: 'test/tmp.sqlite',
+  migrationsPath: __dirname + '/migrations',
+  logging: false
+};
 
 // Init config
 grunt.initConfig({
   sequelize: {
-    options: {
-      dialect: 'sqlite',
-      storage: 'test/tmp.sqlite',
-      migrationsPath: __dirname + '/migrations'
-    }
+    options: options
   }
 });
+
+var sequelize       = new Sequelize(options.database, options.username, options.password, options);
+var migratorOptions = { path: __dirname + '/migrations' };
+var migrator        = sequelize.getMigrator(migratorOptions);
 
 grunt.loadTasks('tasks');
 
@@ -25,7 +33,6 @@ describe('grunt-sequelize', function() {
       it('should migrate to the top migration', function(done) {
 
         grunt.util.spawn({ grunt: true, args: ['sequelize:migrate'] }, function(error, result) {
-          console.log(result);
           assert.equal(result.code, 0);
           done();
         });
@@ -50,9 +57,12 @@ describe('grunt-sequelize', function() {
     describe('without any arguments', function() {
       it('should undo the last migration', function(done) {
         grunt.util.spawn({ grunt: true, args: ['sequelize:undo'] }, function(error, result) {
-          console.log(result);
           assert.equal(result.code, 0);
-          // TODO assert migration ID === last ID
+          var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
+          migrationVersionEmitter.on('success', function(serverMigrationId) {
+            assert.equal(serverMigrationId, '20131121163655');
+          });
+          migrationVersionEmitter.on('error', done);
           done();
         });
       });
