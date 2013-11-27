@@ -28,17 +28,37 @@ module.exports = function(grunt) {
   
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
     var migratorOptions = { path: options.migrationsPath };
-    if(cmd === 'migrate' && arg1) {
-      migratorOptions.to = arg1;
-    }
     var migrator        = sequelize.getMigrator(migratorOptions);
+
+    function getCurrentMigrationId(callback) {
+      var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
+      migrationVersionEmitter.on('success', function(serverMigrationId) {
+        callback(null, serverMigrationId);
+      });
+      migrationVersionEmitter.on('error', function(error) {
+        callback(error);
+      });
+    }
 
     if(cmd === 'migrate') {
       done = this.async();
 
-      sequelize.migrate().done(done);
+      getCurrentMigrationId(function(err, serverMigrationId) {
+
+        if(arg1) {
+          migratorOptions.to = arg1;
+          migratorOptions.from = serverMigrationId;
+          migratorOptions.method = (parseInt(migratorOptions.to, 10) > parseInt(migratorOptions.from, 10)) ? 'up' : 'down';
+          console.log(migratorOptions);
+          migrator        = sequelize.getMigrator(migratorOptions);
+        }
+
+        sequelize.migrate(migratorOptions).done(done);
+
+      });
 
     } else if(cmd === 'undo') {
+      done = this.async();
 
       sequelize.migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
         Meta.find({ order: 'id DESC' }).success(function(meta) {
@@ -54,14 +74,15 @@ module.exports = function(grunt) {
 
     } else if(cmd === 'current') {
       done = this.async();
-      var migrationEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
-      migrationEmitter.on('success', function(migration) {
-        grunt.log.write('Current Migration: ', migration);
+
+      getCurrentMigrationId(function(err, serverMigrationId) {
+        if(err) {
+          return done(err);
+        }
+        grunt.log.write('Current Migration: ', serverMigrationId);
         done();
       });
-      migrationEmitter.on('error', function(err) {
-        done(err);
-      });
+
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
     }
