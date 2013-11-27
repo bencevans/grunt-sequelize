@@ -86,7 +86,7 @@ describe('grunt-sequelize', function() {
               if(err) {
                 return done(err);
               }
-              assert.equal(serverMigrationId, '20131121163655');
+              assert.ok(stdout.match(/20131121163655/));
               done();
             });
           });
@@ -96,6 +96,22 @@ describe('grunt-sequelize', function() {
     });
   });
 
+  describe('sequelize:current', function() {
+    it('should inform the user of the current migration', function(done) {
+
+      exec('grunt sequelize:current', {cwd: __dirname + '/../'}, function(error, stdout, stderr) {
+          assert.equal(error, null);
+          getCurrentMigrationId(function(err, serverMigrationId) {
+            if(err) {
+              return done(err);
+            }
+            assert.equal(serverMigrationId, '20131121163607');
+            done();
+          })
+        });
+
+    });
+  });
 
   describe('sequelize:undo', function() {
     describe('without any arguments', function() {
