@@ -21,12 +21,13 @@ module.exports = function(grunt) {
 
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
-      migrationsPath: './migrations',
+      // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
+      migrationsPath: __dirname + '/../../../' + 'migrations',
       logging: false
     });
-
+  
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
-    var migratorOptions = { path: __dirname + '/../' + options.migrationsPath };
+    var migratorOptions = { path: options.migrationsPath };
     var migrator        = sequelize.getMigrator(migratorOptions);
 
     if(cmd === 'migrate') {
