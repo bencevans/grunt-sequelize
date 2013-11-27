@@ -22,7 +22,7 @@ module.exports = function(grunt) {
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
       // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
-      migrationsPath: __dirname + '/../../../' + 'migrations',
+      migrationsPath: __dirname + '/../../../migrations',
       logging: false
     });
   

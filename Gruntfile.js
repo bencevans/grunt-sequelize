@@ -41,6 +41,7 @@ module.exports = function(grunt) {
       options:{
         dialect: 'sqlite',
         storage: 'test/tmp.sqlite',
+        logging: false,
         migrationsPath: __dirname + '/test/migrations'
       }
     },
