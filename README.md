@@ -41,7 +41,6 @@ grunt.initConfig({
 
 #### options.migrationsPath
 Type: `String`
-Default value: `',  '`
 
 A string value that is used to location your migration files.
 
