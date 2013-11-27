@@ -26,61 +26,45 @@ In your project's Gruntfile, add a section named `sequelize` to the data object 
 grunt.initConfig({
   sequelize: {
     options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
+      migrationsPath: __dirname + '/migrations',
+      // The following is the sequelize config you're used to
+      dialect:  'postgres',
+      username: 'postgres',
+      database: '4_r34lly_s3cur3_p455w0rd',
+      host:     '127.0.0.1'
+    }
   },
 })
 ```
 
 ### Options
 
-#### options.separator
+#### options.migrationsPath
 Type: `String`
 Default value: `',  '`
 
-A string value that is used to do something with whatever.
+A string value that is used to location your migration files.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.*
+Type: Many
 
-A string value that is used to do something else with whatever else.
+Sequelize options as you would usually use for the Sequelize client.
 
-### Usage Examples
+### Running tasks
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+Both the migrate and undo tasks have been ported from Sequelize's original CLI.
 
-```js
-grunt.initConfig({
-  sequelize: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+#### Migrate
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+You can run the migrations up to the top migration by running:
 
-```js
-grunt.initConfig({
-  sequelize: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+    $ grunt sequelize:migrate
+
+#### Undo
+
+In order to migrate down the stack, use:
+
+    $ grunt sequelize:undo
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
