@@ -100,13 +100,13 @@ describe('grunt-sequelize', function() {
   describe('sequelize:current', function() {
     it('should inform the user of the current migration', function(done) {
 
-      exec('grunt sequelize:current', {cwd: __dirname + '/../'}, function(error) {
+      exec('grunt sequelize:current', {cwd: __dirname + '/../'}, function(error, stdout) {
           assert.equal(error, null);
           getCurrentMigrationId(function(err, serverMigrationId) {
             if(err) {
               return done(err);
             }
-            assert.equal(serverMigrationId, '20131121163607');
+            assert.notEqual(stdout.indexOf(serverMigrationId), -1);
             done();
           });
         });
