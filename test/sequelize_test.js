@@ -11,7 +11,7 @@ grunt.initConfig({
     options: {
       dialect: 'sqlite',
       storage: 'test/tmp.sqlite',
-      migrationsPath: 'test/migrations'
+      migrationsPath: __dirname + '/migrations'
     }
   }
 });
