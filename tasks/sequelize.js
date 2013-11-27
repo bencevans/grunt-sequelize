@@ -49,6 +49,16 @@ module.exports = function(grunt) {
         });
       });
 
+    } else if(cmd === 'current') {
+      done = this.async();
+      var migrationEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
+      migrationEmitter.on('success', function(migration) {
+        grunt.log.write('Current Migration: ', migration);
+        done();
+      });
+      migrationEmitter.on('error', function(err) {
+        done(err);
+      });
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
     }
