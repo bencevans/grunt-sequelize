@@ -48,6 +48,6 @@
     "gruntplugin"
   ],
   "dependencies": {
-    "sequelize": "git://github.com/webcast-io/sequelize.git#feature/export-migrator-helpers"
+    "sequelize": "git://github.com/webcast-io/sequelize.git"
   }
 }

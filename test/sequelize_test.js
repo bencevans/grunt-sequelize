@@ -114,6 +114,7 @@ describe('grunt-sequelize', function() {
     });
   });
 
+  /*
   describe('sequelize:undo', function() {
     describe('without any arguments', function() {
       it('should undo the last migration', function(done) {
@@ -149,5 +150,5 @@ describe('grunt-sequelize', function() {
       });
     });
   });
-
+  */
 });

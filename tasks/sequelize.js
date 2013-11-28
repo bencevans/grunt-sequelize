@@ -45,11 +45,15 @@ module.exports = function(grunt) {
 
       getCurrentMigrationId(function(err, serverMigrationId) {
 
+        if(serverMigrationId === arg1) {
+          console.log('There are no pending migrations.');
+          return done();
+        }
+
         if(arg1) {
           migratorOptions.to = arg1;
           migratorOptions.from = serverMigrationId;
-          migratorOptions.method = (parseInt(migratorOptions.to, 10) > parseInt(migratorOptions.from, 10)) ? 'up' : 'down';
-          console.log(migratorOptions);
+          migratorOptions.method = (parseInt(migratorOptions.to, 10) >= parseInt(migratorOptions.from, 10)) ? 'up' : 'down';
           migrator        = sequelize.getMigrator(migratorOptions);
         }
 
