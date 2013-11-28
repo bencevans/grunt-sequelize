@@ -1,5 +1,10 @@
 # History
 
+## 1.1.0
+
+* Added options to migrate to a particular version `grunt sequelize:migrate:VERSION`
+* Improved code coverage
+
 ## 1.0.0
 
 * Changed migrationPath's method on requirement. This will likely result in a change needed in your Gruntfile to something along the lines of `__dirname + '/migrations'`.
