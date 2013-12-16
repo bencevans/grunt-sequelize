@@ -1,7 +1,8 @@
 'use strict';
 
 var assert    = require('assert');
-var exec      = require('child_process').exec;
+var childProcessExec      = require('child_process').exec;
+var randomString = require('random-string');
 var Sequelize = require('sequelize');
 
 var options = {
@@ -14,6 +15,19 @@ var options = {
 var sequelize       = new Sequelize(null, null, null, options);
 var migratorOptions = { path: __dirname + '/migrations' };
 var migrator        = sequelize.getMigrator(migratorOptions);
+
+
+function exec(command, options, callback) {
+  if(typeof options === 'callback') {
+    callback = options;
+    options = {};
+  }
+
+  if(process.env.running_under_istanbul) {
+    command = './node_modules/.bin/istanbul cover --dir ./coverage/' + randomString() + ' ' + command;
+  }
+  childProcessExec(command, options, callback);
+}
 
 /**
  * Get the current migration id state of database
@@ -32,10 +46,12 @@ function getCurrentMigrationId(callback) {
 
 describe('grunt-sequelize', function() {
 
+  // Larger timeout to allow for child_process instanbul instances when running coverage
+  this.timeout(4000);
+
   describe('sequelize:migrate', function() {
     describe('without any arguments', function() {
       it('should migrate to the top migration', function(done) {
-
         exec('grunt sequelize:migrate', { cwd: __dirname + '/../' }, function(error) {
           assert.equal(error, null);
           getCurrentMigrationId(function(err, serverMigrationId) {
