@@ -66,11 +66,16 @@ module.exports = function(grunt) {
 
       sequelize.migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
         Meta.find({ order: 'id DESC' }).success(function(meta) {
+
+
           if (meta) {
+            migratorOptions.from = meta.dataValues.to;
+            migratorOptions.to = meta.dataValues.from;
+            migratorOptions.method = 'down';
             migrator = sequelize.getMigrator(_.extend(migratorOptions, meta), true);
           }
 
-          migrator.migrate({ method: 'down' }).success(function() {
+          migrator.migrate(migratorOptions).success(function() {
             done();
           });
         });
