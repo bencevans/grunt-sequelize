@@ -18,7 +18,7 @@ var migrator        = sequelize.getMigrator(migratorOptions);
 
 
 function exec(command, options, callback) {
-  if(typeof options === 'callback') {
+  if(typeof options === 'function') {
     callback = options;
     options = {};
   }
@@ -117,15 +117,15 @@ describe('grunt-sequelize', function() {
     it('should inform the user of the current migration', function(done) {
 
       exec('grunt sequelize:current', {cwd: __dirname + '/../'}, function(error, stdout) {
-          assert.equal(error, null);
-          getCurrentMigrationId(function(err, serverMigrationId) {
-            if(err) {
-              return done(err);
-            }
-            assert.notEqual(stdout.indexOf(serverMigrationId), -1);
-            done();
-          });
+        assert.equal(error, null);
+        getCurrentMigrationId(function(err, serverMigrationId) {
+          if(err) {
+            return done(err);
+          }
+          assert.notEqual(stdout.indexOf(serverMigrationId), -1);
+          done();
         });
+      });
 
     });
   });
@@ -172,6 +172,7 @@ describe('grunt-sequelize', function() {
       });
     });
   });
-*/
+  */
 
+  });
 });
