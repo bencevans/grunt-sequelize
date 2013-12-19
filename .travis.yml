@@ -8,4 +8,4 @@ env:
 before_script:
   - npm install -g grunt-cli
 after_script:
-  - npm run coveralls
+  - if [ "$TEST_CMD" = 'test' ]; then npm run coveralls; fi
