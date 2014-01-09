@@ -99,10 +99,47 @@ module.exports = function(grunt) {
         grunt.log.write('Current Migration: ', serverMigrationId);
         done();
       });
+      
+    } else if(cmd === 'sync') {
+        done = this.async();
+
+        var options = this.options({
+            environment: process.env.NODE_ENV || 'development',
+            // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
+            migrationsPath: __dirname + '/../../../migrations',
+            logging: false,
+            modelsDir: __dirname + '/models',
+        });
+        
+        console.log('Syncing database ' + options.database + '...');
+        
+        var sequelize       = new Sequelize(options.database, options.username, options.password, options);
+        
+        var fileArray = fs
+          .readdirSync(options.modelsDir)
+          .filter(function(file) {
+             return (file.indexOf('.') !== 0) && (file !== 'index.js');
+          });
+        
+
+        var count = 0;
+        fileArray.forEach(function(file) {\
+           console.log('Importing... '+path.join(options.modelsDir, file));
+           sequelize.import(path.join(options.modelsDir, file));
+           
+           if(count == fileArray.length) { // check if all callbacks have been called
+               console.log('Ok!');
+           }
+           
+        });
+        
+        
 
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
     }
+    
+    
 
   });
 
