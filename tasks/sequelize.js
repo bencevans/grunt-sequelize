@@ -25,6 +25,8 @@ module.exports = function(grunt) {
       migrationsPath: __dirname + '/../../../migrations',
       logging: false
     });
+    
+    console.log('Migrating database ' + options.database + '...');
   
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
     var migratorOptions = { path: options.migrationsPath };
@@ -45,6 +47,12 @@ module.exports = function(grunt) {
 
       getCurrentMigrationId(function(err, serverMigrationId) {
 
+        if (err) {
+        	console.log('Error:');
+        	console.log(err);
+        	return done();
+        }
+    	  
         if(serverMigrationId === arg1) {
           console.log('There are no pending migrations.');
           return done();
