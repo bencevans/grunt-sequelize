@@ -123,10 +123,9 @@ module.exports = function(grunt) {
            count++;
            if(count == fileArray.length) { // check if all callbacks have been called
                console.log('Ok!');
+               done();
            }          
         });
-        
-        
 
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
