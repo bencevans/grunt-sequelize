@@ -8,6 +8,7 @@
 
 'use strict';
 
+var fs        = require('fs');
 var Sequelize = require('sequelize');
 var _         = Sequelize.Utils._;
 
