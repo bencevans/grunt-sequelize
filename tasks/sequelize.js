@@ -120,10 +120,10 @@ module.exports = function(grunt) {
            console.log('Importing... '+path.join(options.modelsDir, file));
            sequelize.import(path.join(options.modelsDir, file));
            
+           count++;
            if(count == fileArray.length) { // check if all callbacks have been called
                console.log('Ok!');
-           }
-           
+           }          
         });
         
         
