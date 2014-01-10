@@ -116,10 +116,10 @@ module.exports = function(grunt) {
         var sequelize       = new Sequelize(options.database, options.username, options.password, options);
         
         var fileArray = fs
-          .readdirSync(options.modelsDir)
-          .filter(function(file) {
-             return (file.indexOf('.') !== 0) && (file !== 'index.js');
-          });
+				          .readdirSync(options.modelsDir)
+				          .filter(function(file) {
+					             return (file.indexOf('.') !== 0) && (file !== 'index.js');				        	  
+				          });
         
 
         var count = 0;
