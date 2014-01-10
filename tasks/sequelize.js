@@ -108,23 +108,34 @@ module.exports = function(grunt) {
 
         console.log('Syncing database ' + options.database + '...');
         
+        var models = [];
         var fileArray = fs
 	          .readdirSync(options.modelsDir)
 	          .filter(function(file) {
 		             return (file.indexOf('.') !== 0) && (file !== 'index.js');				        	  
+	          })
+	          .forEach(function(file) {
+	              console.log('Importing... '+path.join(options.modelsDir, file));
+	              
+	              var model = sequelize.import(path.join(options.modelsDir, file));
+	              models[model.name] = model;
 	          });
         
-
+        
+        var allModels[] = Object.keys(models);
+        
         var count = 0;
-        fileArray.forEach(function(file) {
-           console.log('Importing... '+path.join(options.modelsDir, file));
-           sequelize.import(path.join(options.modelsDir, file));
-           
-           count++;
-           if(count == fileArray.length) { // check if all callbacks have been called
-               console.log('Ok!');
-               done();
-           }          
+        allModels.forEach(function(modelName) {
+           console.log('Cheking associate for '+modelName+'...');
+   	       if (models[modelName].options.hasOwnProperty('associate')) {
+   	           models[modelName].options.associate(db);
+   	       }
+   	       
+	   	    count++;
+	        if(count == allModels.length) { // check if all callbacks have been called
+	            console.log('Ok!');
+	            done();
+	        }      
         });
 
     } else {
