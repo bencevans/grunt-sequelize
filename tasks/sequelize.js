@@ -24,10 +24,9 @@ module.exports = function(grunt) {
       environment: process.env.NODE_ENV || 'development',
       // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
       migrationsPath: __dirname + '/../../../migrations',
-      logging: false
+      logging: false,
+      modelsDir: __dirname + '/../../../models'
     });
-    
-    console.log('Migrating database ' + options.database + '...');
   
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
     var migratorOptions = { path: options.migrationsPath };
@@ -45,6 +44,8 @@ module.exports = function(grunt) {
 
     if(cmd === 'migrate') {
       done = this.async();
+      
+      console.log('Migrating database ' + options.database + '...');
 
       getCurrentMigrationId(function(err, serverMigrationId) {
 
@@ -104,17 +105,7 @@ module.exports = function(grunt) {
     } else if(cmd === 'sync') {
         done = this.async();
 
-        var options = this.options({
-            environment: process.env.NODE_ENV || 'development',
-            // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
-            migrationsPath: __dirname + '/../../../migrations',
-            logging: false,
-            modelsDir: __dirname + '/models',
-        });
-        
         console.log('Syncing database ' + options.database + '...');
-        
-        var sequelize       = new Sequelize(options.database, options.username, options.password, options);
         
         var fileArray = fs
 	          .readdirSync(options.modelsDir)
