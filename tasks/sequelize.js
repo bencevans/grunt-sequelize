@@ -122,7 +122,7 @@ module.exports = function(grunt) {
 	          });
         
         
-        var allModels[] = Object.keys(models);
+        var allModels = Object.keys(models);
         
         var count = 0;
         allModels.forEach(function(modelName) {
