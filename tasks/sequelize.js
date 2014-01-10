@@ -133,8 +133,18 @@ module.exports = function(grunt) {
    	       
 	   	    count++;
 	        if(count == allModels.length) { // check if all callbacks have been called
-	            console.log('Ok!');
-	            done();
+	        	console.log('Now, syncing...');
+	        	sequelize
+	        	  .sync()
+	        	  .complete(function(err) {
+	        	    if (err) {
+	        	    	console.log('Error:');
+	        	    	console.log(err);
+	        	    } else {
+	        	    	console.log('Done!');
+	        	    }
+		            done();
+	        	  });
 	        }      
         });
 
