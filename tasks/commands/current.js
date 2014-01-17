@@ -1,5 +1,7 @@
 'use strict';
 
+// current -> Writes the current migration to console
+
 module.exports = function() {
   return this;
 };
