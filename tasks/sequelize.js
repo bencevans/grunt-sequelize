@@ -8,16 +8,15 @@
 
 'use strict';
 
-var Sequelize = require('sequelize');
-var _         = Sequelize.Utils._;
+var Sequelize  = require('sequelize');
+var requireDir = require('require-dir');
 
 module.exports = function(grunt) {
 
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd, arg1) {
-    var done;
+  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function(cmd, arg1, arg2, arg3) {
 
     var options = this.options({
       environment: process.env.NODE_ENV || 'development',
@@ -25,10 +24,14 @@ module.exports = function(grunt) {
       migrationsPath: __dirname + '/../../../migrations',
       logging: false
     });
-  
+
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
     var migratorOptions = { path: options.migrationsPath };
     var migrator        = sequelize.getMigrator(migratorOptions);
+
+    //
+    // Helpers
+    //
 
     function getCurrentMigrationId(callback) {
       var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
@@ -40,60 +43,36 @@ module.exports = function(grunt) {
       });
     }
 
-    if(cmd === 'migrate') {
-      done = this.async();
+    //
+    // Require and setup Commands
+    //
 
-      getCurrentMigrationId(function(err, serverMigrationId) {
+    var Commands = requireDir(__dirname + '/commands');
+    var commands = {};
 
-        if(serverMigrationId === arg1) {
-          console.log('There are no pending migrations.');
-          return done();
-        }
+    var task = this;
+    Object.keys(Commands).forEach(function(commandName) {
+      commands[commandName] = new Commands[commandName]();
+      commands[commandName].sequelize = sequelize;
+      commands[commandName].migratorOptions = migratorOptions;
+      commands[commandName].migrator = migrator;
+      commands[commandName].getCurrentMigrationId = getCurrentMigrationId;
+      commands[commandName].task = task;
+      commands[commandName].grunt = grunt;
+    });
 
-        if(arg1) {
-          migratorOptions.to = arg1;
-          migratorOptions.from = serverMigrationId;
-          migratorOptions.method = (parseInt(migratorOptions.to, 10) >= parseInt(migratorOptions.from, 10)) ? 'up' : 'down';
-          migrator        = sequelize.getMigrator(migratorOptions);
-        }
+    //
+    // Execute Commands
+    //
 
-        sequelize.migrate(migratorOptions).done(done);
-
-      });
-
-    } else if(cmd === 'undo') {
-      done = this.async();
-
-      sequelize.migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
-        Meta.find({ order: 'id DESC' }).success(function(meta) {
-
-
-          if (meta) {
-            migratorOptions.from = meta.dataValues.to;
-            migratorOptions.to = meta.dataValues.from;
-            migratorOptions.method = 'down';
-            migrator = sequelize.getMigrator(_.extend(migratorOptions, meta), true);
-          }
-
-          migrator.migrate(migratorOptions).success(function() {
-            done();
-          });
-        });
-      });
-
-    } else if(cmd === 'current') {
-      done = this.async();
-
-      getCurrentMigrationId(function(err, serverMigrationId) {
-        if(err) {
-          return done(err);
-        }
-        grunt.log.write('Current Migration: ', serverMigrationId);
-        done();
-      });
-
-    } else {
+    if(Object.keys(commands).indexOf(cmd) === -1) {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
+    }
+
+    if(Object.getPrototypeOf(commands[cmd])[arg1]) {
+      return Object.getPrototypeOf(commands[cmd])[arg1](arg2, arg3);
+    } else {
+      return commands[cmd].default(arg1, arg2, arg3);
     }
 
   });

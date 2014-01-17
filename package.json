@@ -49,6 +49,7 @@
     "gruntplugin"
   ],
   "dependencies": {
-    "sequelize": "git://github.com/webcast-io/sequelize.git"
+    "sequelize": "git://github.com/webcast-io/sequelize.git",
+    "require-dir": "~0.1.0"
   }
 }
