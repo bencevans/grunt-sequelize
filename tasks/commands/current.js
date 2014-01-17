@@ -12,13 +12,14 @@ module.exports.prototype.default = function() {
   var done = self.task.async();
 
   self.getCurrentMigrationId(function(err, serverMigrationId) {
-    if(err) {
-      return done(err);
-    }
+    if(err) return done(err);
+
     self.grunt.log.writeln('');
     self.grunt.log.writeln('  Current Migration: ', serverMigrationId || 'null - no migrations applied');
     self.grunt.log.writeln('');
+
     done();
+
   });
 
 
