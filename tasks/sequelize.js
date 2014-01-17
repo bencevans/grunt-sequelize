@@ -128,7 +128,7 @@ module.exports = function(grunt) {
         allModels.forEach(function(modelName) {
            console.log('Cheking associate for '+modelName+'...');
    	       if (models[modelName].options.hasOwnProperty('associate')) {
-   	           models[modelName].options.associate(db);
+   	           models[modelName].options.associate(allModels);
    	       }
    	       
 	   	    count++;
