@@ -64,20 +64,17 @@ module.exports = function(grunt) {
     } else if(cmd === 'undo') {
       done = this.async();
 
-      sequelize.migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
+      migrator.findOrCreateSequelizeMetaDAO().success(function(Meta) {
         Meta.find({ order: 'id DESC' }).success(function(meta) {
-
-
           if (meta) {
-            migratorOptions.from = meta.dataValues.to;
-            migratorOptions.to = meta.dataValues.from;
-            migratorOptions.method = 'down';
-            migrator = sequelize.getMigrator(_.extend(migratorOptions, meta), true);
-          }
-
-          migrator.migrate(migratorOptions).success(function() {
+            migrator = sequelize.getMigrator(_.extend(migratorOptions, meta.values), true);
+            migrator.migrate({ method: 'down' }).success(function() {
+              done();
+            });
+          } else {
+            console.log('There are no pending migrations.');
             done();
-          });
+          }
         });
       });
 
