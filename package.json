@@ -49,6 +49,6 @@
     "gruntplugin"
   ],
   "dependencies": {
-    "sequelize": "git://github.com/webcast-io/sequelize.git"
+    "sequelize": "~2.0.0-beta.8"
   }
 }
