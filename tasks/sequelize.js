@@ -42,9 +42,17 @@ module.exports = function(grunt) {
 
     if(cmd === 'migrate') {
       done = this.async();
+      
+      console.log('Migrating database ' + options.database + '...');
 
       getCurrentMigrationId(function(err, serverMigrationId) {
 
+		if (err) {
+		  console.log('Error:');
+		  console.log(err);
+		  return done();
+		}    	  
+		
         if(serverMigrationId === arg1) {
           console.log('There are no pending migrations.');
           return done();
