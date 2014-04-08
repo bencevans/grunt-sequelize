@@ -7,5 +7,6 @@ env:
   - TEST_CMD=lint
 before_script:
   - npm install -g grunt-cli
+  - npm install sequelize
 after_script:
   - if [ "$TEST_CMD" = 'test' ]; then npm run coveralls; fi
