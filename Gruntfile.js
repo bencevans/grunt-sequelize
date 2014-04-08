@@ -71,7 +71,7 @@ module.exports = function(grunt) {
   grunt.registerTask('lint', ['jshint']);
 
   if(process.env.TEST_CMD) {
-    grunt.registerTask('run-task', process.env.TEST_CMD);
+    grunt.registerTask('travis', process.env.TEST_CMD);
   }
 
   // By default, lint and run all tests.
