@@ -57,7 +57,10 @@ module.exports = function(grunt) {
           migrator        = sequelize.getMigrator(migratorOptions);
         }
 
-        sequelize.migrate(migratorOptions).done(done);
+        sequelize.migrate(migratorOptions).success(done).error(function(err) {
+          grunt.log.error(err);
+          done(false);
+        });
 
       });
 
@@ -68,11 +71,12 @@ module.exports = function(grunt) {
         Meta.find({ order: 'id DESC' }).success(function(meta) {
           if (meta) {
             migrator = sequelize.getMigrator(_.extend(migratorOptions, meta.values), true);
-            migrator.migrate({ method: 'down' }).success(function() {
-              done();
+            migrator.migrate({ method: 'down' }).success(done).error(function(err) {
+              grunt.log.error(err);
+              done(false);
             });
           } else {
-            console.log('There are no pending migrations.');
+            grunt.log.writeln('There are no pending migrations.');
             done();
           }
         });
