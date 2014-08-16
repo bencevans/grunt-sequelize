@@ -31,16 +31,17 @@
     "coveralls": "rm -rf coverage && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec && ./node_modules/.bin/istanbul report --root ./coverage --dir ./coverage lcovonly && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls && rm -rf ./coverage"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-clean": "~0.4.0",
-    "grunt-mocha-test": "~0.7.0",
-    "grunt": "~0.4.1",
-    "pg": "~2.8.2",
-    "istanbul": "~0.1.45",
-    "mocha": "~1.14.0",
-    "sqlite3": "~2.1.19",
     "coveralls": "~2.3.0",
-    "random-string": "~0.1.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-mocha-test": "~0.7.0",
+    "istanbul": "~0.1.45",
+    "lodash": "^2.4.1",
+    "mocha": "~1.14.0",
+    "pg": "~2.8.2",
+    "random-string": "~0.1.1",
+    "sqlite3": "~2.1.19"
   },
   "peerDependencies": {
     "grunt": "~0.4.1",
