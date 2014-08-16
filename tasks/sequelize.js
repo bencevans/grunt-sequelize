@@ -97,21 +97,24 @@ module.exports = function(grunt) {
     } else if (cmd === 'migration') {
       done = this.async();
 
-      var pad = function(n) {
-        return n < 10 ? '0' + n : n;
+      if ( ! grunt.option('name')) {
+        grunt.log.error('No migration name specified!');
+        done(false);
+      } else {
+        var pad = function (n) {
+          return n < 10 ? '0' + n : n;
+        };
+
+        var date = new Date();
+        var migrationTimestamp = date.getFullYear().toString() + (pad(date.getMonth()+1)).toString() + pad(date.getDate()).toString() + pad(date.getHours()).toString() + pad(date.getMinutes()).toString() + pad(date.getSeconds()).toString();
+        var migrationFileName = migrationTimestamp + '-' + grunt.option('name') + '.js';
+
+        var skeleton = fs.readFileSync(__dirname + '/../data/migration.js').toString();
+
+        fs.writeFileSync(options.migrationsPath + '/' + migrationFileName, skeleton);
+
+        grunt.log.writeln('Migration created: ' + migrationFileName);
       }
-
-      var date = new Date();
-      var migrationTimestamp = date.getFullYear().toString() + (pad(date.getMonth()+1)).toString()
-        + pad(date.getDate()).toString() + pad(date.getHours()).toString() + pad(date.getMinutes()).toString()
-        + pad(date.getSeconds()).toString();
-      var migrationFileName = migrationTimestamp + '-' + grunt.option('name') + '.js';
-
-      var skeleton = fs.readFileSync(__dirname + '/../data/migration.js').toString();
-
-      fs.writeFileSync(options.migrationsPath + '/' + migrationFileName, skeleton);
-
-      grunt.log.writeln('Migration created: ' + migrationFileName);
     } else {
       throw new Error('Unknown grunt-sequelize command: ' + cmd);
     }
