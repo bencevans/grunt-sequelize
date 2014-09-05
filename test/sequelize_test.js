@@ -4,6 +4,8 @@ var assert    = require('assert');
 var childProcessExec      = require('child_process').exec;
 var randomString = require('random-string');
 var Sequelize = require('sequelize');
+var fs = require('fs');
+var _ = require('lodash');
 
 var options = {
   dialect: 'sqlite',
@@ -127,6 +129,42 @@ describe('grunt-sequelize', function() {
         });
       });
 
+    });
+  });
+
+  describe('sequelize:migration', function() {
+    describe('without any arguments', function() {
+      it('should give a warning', function(done) {
+        exec('grunt sequelize:migration', {cwd: __dirname + '/../'}, function(error) {
+          assert.notEqual(error, null);
+          done();
+        });
+      });
+    });
+
+    describe('with a name argument', function() {
+      var filesBefore = fs.readdirSync(__dirname + '/migrations');
+
+      it('should create an empty migration with a proper filename', function(done){
+        exec('grunt sequelize:migration --name testMigration', {cwd: __dirname + '/../'}, function(error) {
+          assert.equal(error, null, 'There was an error running the command.');
+
+          var filesAfter = fs.readdirSync(__dirname + '/migrations');
+          var newMigrationFilename = _.first(_.xor(filesBefore, filesAfter));
+          var newMigrationContents = fs.readFileSync(__dirname + '/migrations/' + newMigrationFilename, {encoding: 'utf-8'});
+          var skeleton = fs.readFileSync(__dirname + '/../data/migration.js', {encoding: 'utf-8'});
+
+          assert.equal(newMigrationContents, skeleton, 'The new migration does not contain an empty skeleton migration.');
+
+          var pattern = /^[0-9]{14}-testMigration.js$/;
+          var match = newMigrationFilename.match(pattern);
+          assert.notEqual(match, null, 'The migration filename does not match the format.');
+
+          fs.unlinkSync(__dirname + '/migrations/' + newMigrationFilename);
+
+          done();
+        });
+      });
     });
   });
 
