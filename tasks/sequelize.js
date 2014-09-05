@@ -8,6 +8,8 @@
 
 'use strict';
 
+var fs        = require('fs');
+var path      = require('path');
 var Sequelize = require('sequelize');
 var _         = Sequelize.Utils._;
 var fs        = require('fs');
@@ -24,7 +26,8 @@ module.exports = function(grunt) {
       environment: process.env.NODE_ENV || 'development',
       // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
       migrationsPath: __dirname + '/../../../migrations',
-      logging: false
+      logging: false,
+      modelsDir: __dirname + '/../../../models'
     });
 
     var sequelize       = new Sequelize(options.database, options.username, options.password, options);
@@ -43,9 +46,17 @@ module.exports = function(grunt) {
 
     if(cmd === 'migrate') {
       done = this.async();
+      
+      console.log('Migrating database ' + options.database + '...');
 
       getCurrentMigrationId(function(err, serverMigrationId) {
 
+		if (err) {
+		  console.log('Error:');
+		  console.log(err);
+		  return done();
+		}    	  
+		
         if(serverMigrationId === arg1) {
           console.log('There are no pending migrations.');
           return done();
@@ -93,6 +104,51 @@ module.exports = function(grunt) {
         grunt.log.write('Current Migration: ', serverMigrationId);
         done();
       });
+      
+    } else if(cmd === 'sync') {
+        done = this.async();
+
+        console.log('Syncing database ' + options.database + '...');
+        
+        var models = [];
+        var fileArray = fs
+	          .readdirSync(options.modelsDir)
+	          .filter(function(file) {
+		             return (file.indexOf('.') !== 0) && (file !== 'index.js');				        	  
+	          })
+	          .forEach(function(file) {
+	              console.log('Importing... '+path.join(options.modelsDir, file));
+	              
+	              var model = sequelize.import(path.join(options.modelsDir, file));
+	              models[model.name] = model;
+	          });
+        
+        
+        var allModels = Object.keys(models);
+        
+        var count = 0;
+        allModels.forEach(function(modelName) {
+           console.log('Cheking associate for '+modelName+'...');
+   	       if (models[modelName].options.hasOwnProperty('associate')) {
+   	           models[modelName].options.associate(models);
+   	       }
+   	       
+	   	    count++;
+	        if(count == allModels.length) { // check if all callbacks have been called
+	        	console.log('Now, syncing...');
+	        	sequelize
+	        	  .sync()
+	        	  .complete(function(err) {
+	        	    if (err) {
+	        	    	console.log('Error:');
+	        	    	console.log(err);
+	        	    } else {
+	        	    	console.log('Done!');
+	        	    }
+		            done();
+	        	  });
+	        }      
+        });
 
     } else if (cmd === 'migration') {
       done = this.async();
