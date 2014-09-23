@@ -136,7 +136,7 @@ module.exports = function (grunt) {
         }
 
         count++;
-        if (count == allModels.length) { // check if all callbacks have been called
+        if (count === allModels.length) { // check if all callbacks have been called
           grunt.log.writeln('Now, syncing...');
           sequelize
             .sync()
