@@ -1,5 +1,7 @@
 # grunt-sequelize
 
+### Looking for a new maintainers, please contact @bencevans
+
 > Sequelize migrations from Grunt
 
 ## Getting Started
