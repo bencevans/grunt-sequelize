@@ -27,21 +27,24 @@
   },
   "scripts": {
     "test": "grunt test",
-    "coverage": "rm -rf coverage && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec && ./node_modules/.bin/istanbul report --root ./coverage --dir ./coverage lcov",
-    "coveralls": "rm -rf coverage && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec && ./node_modules/.bin/istanbul report --root ./coverage --dir ./coverage lcovonly && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls && rm -rf ./coverage"
+    "coverage": "rm -rf coverage && istanbul cover _mocha --report lcov",
+    "coveralls": "rm -rf coverage && istanbul cover _mocha --report lcovonly cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "devDependencies": {
+    "chai": "^1.9.2",
     "coveralls": "~2.3.0",
     "grunt": "~0.4.1",
-    "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-mocha-test": "~0.7.0",
-    "istanbul": "~0.1.45",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-jscs": "^0.7.1",
+    "grunt-mocha-test": "^0.12.1",
+    "istanbul": "^0.3.2",
+    "load-grunt-tasks": "^0.6.0",
     "lodash": "^2.4.1",
-    "mocha": "~1.14.0",
-    "pg": "~2.8.2",
-    "random-string": "~0.1.1",
-    "sqlite3": "~2.1.19"
+    "mocha": "^1.21.5",
+    "random-string": "^0.1.1",
+    "sqlite3": "^3.0.2",
+    "time-grunt": "^1.0.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.1",

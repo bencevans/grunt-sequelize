@@ -13,5 +13,16 @@
   "camelcase": true,
   "newcap": true,
   "curly": true,
-  "eqeqeq": true
+  "eqeqeq": true,
+  "expr": true,
+  "predef": [
+    "define",
+    "before",
+    "after",
+    "describe",
+    "it",
+    "beforeEach",
+    "afterEach",
+    "expect"
+  ]
 }

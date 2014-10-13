@@ -114,7 +114,7 @@ module.exports = function (grunt) {
       grunt.log.writeln('Syncing database ' + options.database + '...');
 
       var models = [];
-      var fileArray = fs
+      fs
         .readdirSync(options.modelsDir)
         .filter(function (file) {
           return (file.indexOf('.') !== 0) && (file !== 'index.js');

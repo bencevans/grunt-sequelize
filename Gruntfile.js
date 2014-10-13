@@ -9,72 +9,66 @@
 'use strict';
 
 module.exports = function(grunt) {
+  require('load-grunt-tasks')(grunt);
+  require('time-grunt')(grunt);
 
-  // Project configuration.
+  var files = {
+    lib: ['lib/**/*.js', 'tasks/**/*.js'],
+    test: ['test/**/*.js'],
+    specs: ['test/**/.spec.js']
+  };
+
   grunt.initConfig({
     jshint: {
+      options: { jshintrc: true },
+      lib: files.lib,
+      test: files.test
+    },
 
+    jscs: {
       options: {
-        jshintrc: '.jshintrc',
-        ignores: [
-          '*.min.js',
-          'node_modules/**/*',
-          'public/bower_components/**/*',
-          'dist/**/*',
-          'coverage/**/*'
-        ]
+        config: '.jscsrc'
       },
-      all: [
-        '*.js',
-        '**/*.js'
-      ]
-
+      lib: files.lib,
+      test: files.test
     },
 
-    // Before generating any new files, remove any previously-created files.
     clean: {
-      tests: ['tmp', 'test/tmp.sqlite', 'test/tmp.sqlite-journal'],
-    },
-
-    // Configuration to be run (and then tested).
-    sequelize: {
-      options:{
-        dialect: 'sqlite',
-        storage: 'test/tmp.sqlite',
-        logging: false,
-        migrationsPath: __dirname + '/test/migrations'
-      }
+      test: ['test/.tmp']
     },
 
     mochaTest: {
-      test: {
-        options: {
-          reporter: 'dot',
-        },
-        src: ['test/**.js']
-      }
+      options: {
+        reporter: 'spec',
+        ui: 'bdd',
+        require: ['./test']
+      },
+
+      specs: files.specs
     },
+
+    sequelize: {
+      options:{
+        dialect: 'sqlite',
+        storage: 'test/.tmp/db-test.sqlite',
+        logging: false,
+        migrationsPath: __dirname + '/test/migrations'
+      }
+    }
 
   });
 
   // Actually load this plugin's task(s).
   grunt.loadTasks('tasks');
 
-  // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-mocha-test');
-
-
-  grunt.registerTask('mocha', ['mochaTest']);
-  grunt.registerTask('test', ['clean', 'mocha']);
-  grunt.registerTask('lint', ['jshint']);
+  grunt.registerTask('test', ['clean', 'mochaTest']);
+  grunt.registerTask('validate', ['jshint', 'jscs']);
 
   if(process.env.TEST_CMD) {
     grunt.registerTask('travis', process.env.TEST_CMD);
   }
 
   // By default, lint and run all tests.
-  grunt.registerTask('default', ['jshint', 'test']);
+  grunt.registerTask('default', ['validate', 'test']);
 
 };
