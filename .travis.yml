@@ -1,14 +1,13 @@
 language: node_js
 node_js:
-  - "0.8"
   - "0.10"
 env:
-  - TEST_CMD=test
-  - TEST_CMD=lint
+  - NODE_ENV=test
 before_script:
-  - npm install -g grunt-cli
-  - npm install sequelize
+  - npm i -g grunt-cli
+  - npm i sequelize
 script:
-  - grunt travis --stack
+  - grunt validate
+  - npm run-script coverage
 after_script:
-  - if [ "$TEST_CMD" = 'test' ]; then npm run coveralls; fi
+  - npm run-script coveralls

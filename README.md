@@ -1,5 +1,11 @@
 # grunt-sequelize
 
+![Build](https://travis-ci.org/bencevans/grunt-sequelize.svg)
+![Coverage](https://coveralls.io/repos/bencevans/grunt-sequelize/badge.png)
+![Dependencies](https://david-dm.org/bencevans/grunt-sequelize.svg)
+![Dev dependencies](https://david-dm.org/bencevans/grunt-sequelize/dev-status.svg)
+![Peer dependencies](https://david-dm.org/bencevans/grunt-sequelize/peer-status.svg)
+
 ### Looking for a new maintainers, please contact @bencevans
 
 > Sequelize migrations from Grunt
@@ -28,28 +34,36 @@ In your project's Gruntfile, add a section named `sequelize` to the data object 
 grunt.initConfig({
   sequelize: {
     options: {
-      migrationsPath: __dirname + '/migrations',
-      // The following is the sequelize config you're used to
-      dialect:  'postgres',
-      username: 'postgres',
-      database: '4_r34lly_s3cur3_p455w0rd',
-      host:     '127.0.0.1'
+      migrations: 'db/migrations',
+      config: 'db/config.json'
     }
-  },
+  }
 })
 ```
 
 ### Options
 
-#### options.migrationsPath
+#### options.migrations
 Type: `String`
 
 A string value that is used to location your migration files.
 
-#### options.*
-Type: Many
+#### options.config
+Type: `String`
 
-Sequelize options as you would usually use for the Sequelize client.
+A string value that is used to locate your sequelize db config.
+
+##### Example of config.json
+
+```js
+{
+  "development": {
+    "username": "user",
+    "password": "pwd",
+    "database": "my_cool_db"
+  }
+}
+```
 
 ### Running tasks
 
@@ -61,14 +75,27 @@ You can run the migrations up to the top migration by running:
 
     $ grunt sequelize:migrate
 
+or
+
+    $ grunt sequelize:migrate:up
+
 #### Undo
 
 In order to migrate down the stack, use:
 
-    $ grunt sequelize:undo
+    $ grunt sequelize:migrate:undo
+
+#### Redo
+
+Also you can redo all your migrations by running:
+
+    $ grunt sequelize:migrate:redo
 
 ## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+In lieu of a formal styleguide, take care to maintain the existing coding style.
+Add unit tests for any new or changed functionality. Validate and test your code by running [Grunt](http://gruntjs.com/)
+
+    $ grunt validate
 
 ## Release History
 _(Nothing yet)_

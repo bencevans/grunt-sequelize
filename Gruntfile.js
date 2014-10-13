@@ -8,14 +8,14 @@
 
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
   var files = {
-    lib: ['lib/**/*.js', 'tasks/**/*.js'],
+    lib: ['lib/**/*.js', 'tasks/**/*.js', '*.js'],
     test: ['test/**/*.js'],
-    specs: ['test/**/.spec.js']
+    specs: ['test/**/*_spec.js']
   };
 
   grunt.initConfig({
@@ -45,30 +45,20 @@ module.exports = function(grunt) {
       },
 
       specs: files.specs
-    },
-
-    sequelize: {
-      options:{
-        dialect: 'sqlite',
-        storage: 'test/.tmp/db-test.sqlite',
-        logging: false,
-        migrationsPath: __dirname + '/test/migrations'
-      }
     }
-
   });
 
-  // Actually load this plugin's task(s).
-  grunt.loadTasks('tasks');
+  if (process.env.NODE_ENV === 'integration') {
+    grunt.config.set('sequelize', {
+      options: {
+        config: __dirname + '/db/config.json',
+        migrations: __dirname + '/db/migrations'
+      }
+    });
+    grunt.loadTasks('tasks');
+  }
 
   grunt.registerTask('test', ['clean', 'mochaTest']);
   grunt.registerTask('validate', ['jshint', 'jscs']);
-
-  if(process.env.TEST_CMD) {
-    grunt.registerTask('travis', process.env.TEST_CMD);
-  }
-
-  // By default, lint and run all tests.
   grunt.registerTask('default', ['validate', 'test']);
-
 };
