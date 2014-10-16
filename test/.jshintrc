@@ -17,12 +17,14 @@
   "expr": true,
   "predef": [
     "define",
+    "context",
     "before",
     "after",
     "describe",
     "it",
     "beforeEach",
     "afterEach",
-    "expect"
+    "expect",
+    "runGrunt"
   ]
 }

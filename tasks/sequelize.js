@@ -9,174 +9,74 @@
 'use strict';
 
 var path = require('path');
-var Sequelize = require('sequelize');
-var _ = Sequelize.Utils._;
-var fs = require('fs');
+var _ = require('lodash');
+var utils = require('../lib/util');
+var MigrateTask = require('../lib/migrate_task');
 
 module.exports = function (grunt) {
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+  function options() {
+    // node_modules/grunt-sequelize/tasks
+    var dbPath = path.normalize(path.join(__dirname, '../../../db'));
+    var env = process.env.NODE_ENV || 'development';
 
-  grunt.registerTask('sequelize', 'Sequelize migrations from Grunt', function (cmd, arg1) {
-    var done;
-
-    var options = this.options({
-      environment: process.env.NODE_ENV || 'development',
-      // As a default value, assume __dirname is `/<some path>/node_modules/grunt-sequelize/tasks`
-      migrationsPath: __dirname + '/../../../migrations',
-      logging: false,
-      modelsDir: __dirname + '/../../../models'
+    var taskOpts = _.defaults(grunt.config.get('sequelize.options'), {
+      config: path.join(dbPath, 'config.json'),
+      migrations: path.join(dbPath, 'migrations')
     });
 
-    if (options.config) {
-      _.extend(options, require(options.config)[options.environment]);
+    var dbConfig = grunt.file.readJSON(taskOpts.config)[env];
+    if (!dbConfig) {
+      var err = new Error('No configuration for NODE_ENV="' + env + '" found in the ' + taskOpts.config);
+      grunt.log.error(err);
+      throw err;
     }
 
-    var sequelize = new Sequelize(options.database, options.username, options.password, options);
-    var migratorOptions = { path: options.migrationsPath };
-    var migrator = sequelize.getMigrator(migratorOptions);
+    delete taskOpts.config;
+    return _.extend(taskOpts, dbConfig);
+  }
 
-    function getCurrentMigrationId(callback) {
-      var migrationVersionEmitter = sequelize.migrator.getLastMigrationIdFromDatabase();
-      migrationVersionEmitter.on('success', function (serverMigrationId) {
-        callback(null, serverMigrationId);
-      });
-      migrationVersionEmitter.on('error', function (error) {
-        callback(error);
-      });
+  grunt.registerTask('sequelize:migrate', function (arg) {
+    var task = new MigrateTask(options());
+    var done = this.async();
+
+    arg = arg || 'up';
+
+    var res;
+
+    switch (arg) {
+      case 'up':
+        grunt.log.writeln('Running migrations...');
+        res = task.up();
+        break;
+      case 'down': /* falls through */
+      case 'undo':
+        grunt.log.writeln('Undo migrations...');
+        res = task.down();
+        break;
+      case 'redo':
+        grunt.log.writeln('Redo migrations...');
+        res = task.redo();
+        break;
+      default:
+        var err = new Error('Unknown task: sequelize:migrate:' + arg);
+        grunt.log.error(err);
+        return done(err);
     }
 
-    if (cmd === 'migrate') {
-      done = this.async();
+    return res.then(function () {
+      grunt.log.writeln('Done!');
+    })
+      .complete(done);
+  });
 
-      grunt.log.writeln('Migrating database ' + options.database + '...');
-
-      getCurrentMigrationId(function (err, serverMigrationId) {
-
-        if (err) {
-          grunt.log.writeln('Error:');
-          grunt.log.writeln(err);
-          return done();
-        }
-
-        if (serverMigrationId === arg1) {
-          grunt.log.writeln('There are no pending migrations.');
-          return done();
-        }
-
-        if (arg1) {
-          migratorOptions.to = arg1;
-          migratorOptions.from = serverMigrationId;
-          migratorOptions.method = (parseInt(migratorOptions.to, 10) >= parseInt(migratorOptions.from, 10)) ? 'up' : 'down';
-          migrator = sequelize.getMigrator(migratorOptions);
-        }
-
-        sequelize.migrate(migratorOptions).success(done).error(function (err) {
-          grunt.log.error(err);
-          done(false);
-        });
-
-      });
-
-    } else if (cmd === 'undo') {
-      done = this.async();
-
-      migrator.findOrCreateSequelizeMetaDAO().success(function (Meta) {
-        Meta.find({ order: 'id DESC' }).success(function (meta) {
-          if (meta) {
-            migrator = sequelize.getMigrator(_.extend(migratorOptions, meta.values), true);
-            migrator.migrate({ method: 'down' }).success(done).error(function (err) {
-              grunt.log.error(err);
-              done(false);
-            });
-          } else {
-            grunt.log.writeln('There are no pending migrations.');
-            done();
-          }
-        });
-      });
-
-    } else if (cmd === 'current') {
-      done = this.async();
-
-      getCurrentMigrationId(function (err, serverMigrationId) {
-        if (err) {
-          return done(err);
-        }
-        grunt.log.write('Current Migration: ', serverMigrationId);
-        done();
-      });
-
-    } else if (cmd === 'sync') {
-      done = this.async();
-
-      grunt.log.writeln('Syncing database ' + options.database + '...');
-
-      var models = [];
-      fs
-        .readdirSync(options.modelsDir)
-        .filter(function (file) {
-          return (file.indexOf('.') !== 0) && (file !== 'index.js');
-        })
-        .forEach(function (file) {
-          grunt.log.writeln('Importing... ' + path.join(options.modelsDir, file));
-
-          var model = sequelize.import(path.join(options.modelsDir, file));
-          models[model.name] = model;
-        });
-
-      var allModels = Object.keys(models);
-
-      var count = 0;
-      allModels.forEach(function (modelName) {
-        grunt.log.writeln('Cheking associate for ' + modelName + '...');
-        if (models[modelName].options.hasOwnProperty('associate')) {
-          models[modelName].options.associate(models);
-        }
-
-        count++;
-        if (count === allModels.length) { // check if all callbacks have been called
-          grunt.log.writeln('Now, syncing...');
-          sequelize
-            .sync()
-            .complete(function (err) {
-              if (err) {
-                grunt.log.writeln('Error:');
-                grunt.log.writeln(err);
-              } else {
-                grunt.log.writeln('Done!');
-              }
-              done();
-            });
-        }
-      });
-
-    } else if (cmd === 'migration') {
-      done = this.async();
-
-      if (!grunt.option('name')) {
-        grunt.log.error('No migration name specified!');
-        done(false);
-      } else {
-        var pad = function (n) {
-          return n < 10 ? '0' + n : n;
-        };
-
-        var date = new Date();
-        var migrationTimestamp = date.getFullYear().toString() + (pad(date.getMonth() + 1)).toString() + pad(date.getDate()).toString() + pad(date.getHours()).toString() + pad(date.getMinutes()).toString() + pad(date.getSeconds()).toString();
-        var migrationFileName = migrationTimestamp + '-' + grunt.option('name') + '.js';
-
-        var skeleton = fs.readFileSync(__dirname + '/../data/migration.js').toString();
-
-        fs.writeFileSync(options.migrationsPath + '/' + migrationFileName, skeleton);
-
-        grunt.log.writeln('Migration created: ' + migrationFileName);
-      }
-    } else {
-      throw new Error('Unknown grunt-sequelize command: ' + cmd);
-    }
-
+  // TODO: maybe we should leave this kind of functionality to scaffold generators (ex. yeoman)?
+  grunt.registerTask('sequelize:migration:create', function (name) {
+    var opts = options();
+    var dst = path.join(opts.migrations, utils.ts() + '-' + name + '.js');
+    grunt.file.mkdir(path.dirname(dst));
+    grunt.file.copy(path.normalize(path.join(__dirname, '../lib/assets', 'migration.js')), dst);
+    grunt.log.writeln('Migration created: ' + path.basename(dst));
   });
 
 };
