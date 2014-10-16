@@ -1,10 +1,11 @@
 # grunt-sequelize
 
-![Build](https://travis-ci.org/bencevans/grunt-sequelize.svg)
-![Coverage](https://coveralls.io/repos/bencevans/grunt-sequelize/badge.png)
-![Dependencies](https://david-dm.org/bencevans/grunt-sequelize.svg)
-![Dev dependencies](https://david-dm.org/bencevans/grunt-sequelize/dev-status.svg)
-![Peer dependencies](https://david-dm.org/bencevans/grunt-sequelize/peer-status.svg)
+[![Build](https://travis-ci.org/bencevans/grunt-sequelize.svg?branch=master)](https://travis-ci.org/bencevans/grunt-sequelize)
+[![Coverage Status](https://coveralls.io/repos/bencevans/grunt-sequelize/badge.png?branch=master)](https://coveralls.io/r/bencevans/grunt-sequelize?branch=master)
+
+[![Dependency Status](https://david-dm.org/bencevans/grunt-sequelize.svg)](https://david-dm.org/bencevans/grunt-sequelize)
+[![devDependency Status](https://david-dm.org/bencevans/grunt-sequelize/dev-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=devDependencies)
+[![peerDependency Status](https://david-dm.org/bencevans/grunt-sequelize/peer-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=peerDependencies)
 
 ### Looking for a new maintainers, please contact @bencevans
 
