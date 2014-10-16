@@ -42,31 +42,31 @@ module.exports = function (grunt) {
 
     arg = arg || 'up';
 
-    var res;
+    task.init()
 
-    switch (arg) {
-      case 'up':
-        grunt.log.writeln('Running migrations...');
-        res = task.up();
-        break;
-      case 'down': /* falls through */
-      case 'undo':
-        grunt.log.writeln('Undo migrations...');
-        res = task.down();
-        break;
-      case 'redo':
-        grunt.log.writeln('Redo migrations...');
-        res = task.redo();
-        break;
-      default:
-        var err = new Error('Unknown task: sequelize:migrate:' + arg);
-        grunt.log.error(err);
-        return done(err);
-    }
+      .then(function () {
+        switch (arg) {
+          case 'up':
+            grunt.log.writeln('Running migrations...');
+            return task.up();
+          case 'down': /* falls through */
+          case 'undo':
+            grunt.log.writeln('Undo migrations...');
+            return task.down();
+          case 'redo':
+            grunt.log.writeln('Redo migrations...');
+            return task.redo();
+          default:
+            var err = new Error('Unknown task: sequelize:migrate:' + arg);
+            grunt.log.error(err);
+            throw err;
+        }
+      })
 
-    return res.then(function () {
-      grunt.log.writeln('Done!');
-    })
+      .then(function () {
+        grunt.log.writeln('Done!');
+      })
+
       .complete(done);
   });
 
