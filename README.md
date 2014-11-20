@@ -7,8 +7,6 @@
 [![devDependency Status](https://david-dm.org/bencevans/grunt-sequelize/dev-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=devDependencies)
 [![peerDependency Status](https://david-dm.org/bencevans/grunt-sequelize/peer-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=peerDependencies)
 
-### Looking for a new maintainers, please contact @bencevans
-
 > Sequelize migrations from Grunt
 
 ## Getting Started
