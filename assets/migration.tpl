@@ -1,12 +1,11 @@
 'use strict';
 
 module.exports = {
-  up: function (migration, DataTypes, done) {
+  up: function (queryInterface, DataTypes) {
     // add altering commands here, calling 'done' when finished
-    done();
   },
-  down: function (migration, DataTypes, done) {
+
+  down: function (queryInterface, DataTypes) {
     // add reverting commands here, calling 'done' when finished
-    done();
   }
 };

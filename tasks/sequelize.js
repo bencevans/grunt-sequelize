@@ -11,7 +11,7 @@
 var path = require('path');
 var _ = require('lodash');
 var utils = require('../lib/util');
-var MigrateTask = require('../lib/migrate_task');
+var createMigrateTask = require('../lib/migrate_task');
 
 module.exports = function (grunt) {
 
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
 
     var taskOpts = _.defaults(grunt.config.get('sequelize.options'), {
       config: path.join(dbPath, 'config.json'),
-      migrations: path.join(dbPath, 'migrations')
+      migrationsPath: path.join(dbPath, 'migrations')
     });
 
     var dbConfig = grunt.file.readJSON(taskOpts.config)[env];
@@ -33,11 +33,12 @@ module.exports = function (grunt) {
     }
 
     delete taskOpts.config;
+    taskOpts.log = console.log;
     return _.extend(taskOpts, dbConfig);
   }
 
   grunt.registerTask('sequelize:migrate', function (arg) {
-    var task = new MigrateTask(options());
+    var task = createMigrateTask(options());
     var done = this.async();
 
     arg = arg || 'up';
@@ -47,14 +48,14 @@ module.exports = function (grunt) {
       .then(function () {
         switch (arg) {
           case 'up':
-            grunt.log.writeln('Running migrations...');
+            grunt.log.writeln('Running pending migrations...');
             return task.up();
           case 'down': /* falls through */
           case 'undo':
-            grunt.log.writeln('Undo migrations...');
+            grunt.log.writeln('Undoing last migration...');
             return task.down();
           case 'redo':
-            grunt.log.writeln('Redo migrations...');
+            grunt.log.writeln('Redoing last migration...');
             return task.redo();
           default:
             var err = new Error('Unknown task: sequelize:migrate:' + arg);

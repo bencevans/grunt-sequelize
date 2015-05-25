@@ -5,36 +5,36 @@ require('./test_dirs');
 var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var Sequelize = require('sequelize');
+var _ = require('lodash');
+var createMigrator = require('../../lib/migrate_task').createMigrator;
 
 before('Create db connection', function () {
-  this.dbOptions = {
+  this.opts = {
     dialect: 'sqlite',
     storage: path.join(this.tmpDir, 'db-test.sqlite'),
+    migrationsPath: path.join(this.tmpDir, 'migrations'),
     logging: false
   };
 
-  this.db = new Sequelize(this.dbOptions.database, this.dbOptions.username, this.dbOptions.password,
-    this.dbOptions);
+  this.migrator = createMigrator(this.opts);
 
-  this.migrations = path.join(this.tmpDir, 'migrations');
-  mkdirp.sync(this.migrations);
-  this.template = fs.readFileSync(path.join(__dirname, '../../lib/assets/migration.js'));
+  mkdirp.sync(this.opts.migrationsPath);
+
+  this.template = fs.readFileSync(path.join(__dirname, '../../assets/migration.tpl'));
 
   this.migrateTo = function (id) {
-    return this.db.getMigrator({ path: this.migrations, to: id }, true)
-      .migrate();
+    return this.migrator.up({ to: id });
   };
 });
 
-afterEach('Roll back all migrations', function (done) {
-  this.db.getMigrator({ path: this.migrations }).findOrCreateSequelizeMetaDAO()
-    .then(function (Meta) {
-      return Meta.destroy();
-    })
-    .complete(done);
+afterEach('Roll back all migrations', function () {
+  return this.migrator.executed()
+    .bind(this.migrator)
+    .then(function (executed) {
+      return this.down(_.pluck(executed, 'file'));
+    });
 });
 
 after('Close db connection', function () {
-  this.db.close();
+  this.migrator.options.storageOptions.sequelize.close();
 });

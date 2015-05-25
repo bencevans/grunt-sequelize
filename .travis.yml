@@ -1,13 +1,12 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "0.12"
 env:
   - NODE_ENV=test
 before_script:
-  - npm i -g grunt-cli
-  - npm i sequelize
+  - npm i sequelize umzug
 script:
-  - grunt validate
-  - npm run-script coverage
+  - npm run lint
+  - npm run test-coverage
 after_script:
-  - npm run-script coveralls
+  - npm run coveralls
