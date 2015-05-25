@@ -9,9 +9,6 @@
 'use strict';
 
 module.exports = function (grunt) {
-  require('load-grunt-tasks')(grunt);
-  require('time-grunt')(grunt);
-
   var files = {
     lib: ['lib/**/*.js', 'tasks/**/*.js', '*.js'],
     test: ['test/**/*.js'],
@@ -31,21 +28,8 @@ module.exports = function (grunt) {
       },
       lib: files.lib,
       test: files.test
-    },
-
-    clean: {
-      test: ['test/.tmp']
-    },
-
-    mochaTest: {
-      options: {
-        reporter: 'spec',
-        ui: 'bdd',
-        require: ['./test']
-      },
-
-      specs: files.specs
     }
+
   });
 
   if (process.env.NODE_ENV === 'integration') {
@@ -57,6 +41,9 @@ module.exports = function (grunt) {
     });
     grunt.loadTasks('tasks');
   }
+
+  grunt.loadNpmTasks('grunt-jscs');
+  grunt.loadNpmTasks('grunt-jshint');
 
   grunt.registerTask('test', ['clean', 'mochaTest']);
   grunt.registerTask('validate', ['jshint', 'jscs']);

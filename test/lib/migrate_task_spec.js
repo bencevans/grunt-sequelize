@@ -8,7 +8,7 @@ var _ = require('lodash');
 var shared = require('shared-examples-for');
 var tk = require('timekeeper');
 var utils = require('../../lib/util');
-var MigrateTask = require('../../lib/migrate_task');
+var createMigrateTask = require('../../lib/migrate_task');
 
 describe('Migrate task', function () {
   before(function () {
@@ -17,8 +17,8 @@ describe('Migrate task', function () {
       now.setSeconds(now.getSeconds() + 10);
       // travel in time to generate migration id without collisions
       tk.travel(now);
-      var id = utils.ts();
-      fs.writeFileSync(path.join(this.migrations, id + '-' + name + '.js'), this.template);
+      var id = utils.ts() + '-' + name + '.js';
+      fs.writeFileSync(path.join(this.opts.migrationsPath, id), this.template);
       return id;
     }, this);
 
@@ -27,22 +27,20 @@ describe('Migrate task', function () {
 
   describe('instance methods', function () {
     beforeEach(function () {
-      this.task = new MigrateTask(_.extend({
-        migrations: this.migrations
-      }, this.dbOptions));
+      this.task = createMigrateTask(this.opts);
     });
 
     shared.examplesFor('migrate to', function (direction) {
       it('should migrate ' + direction + ' to a specific id', function () {
-        return expect(utils.lastMigrationId(this.task.migrator))
+        return expect(utils.lastMigrationId(this.task))
           .to.eventually.eq(this.currentMigrationId);
       });
     });
 
     describe('#up()', function () {
-      beforeEach(function (done) {
+      beforeEach(function () {
         this.currentMigrationId = _.last(this.ids);
-        this.task.up().complete(done);
+        return this.task.up();
       });
 
       context('when there are no performed migrations', function () {
@@ -50,43 +48,46 @@ describe('Migrate task', function () {
       });
 
       context('when there are performed migrations', function () {
-        before(function (done) {
-          this.migrateTo(this.ids[2]).complete(done);
+        before(function () {
+          return this.migrateTo(this.ids[2]);
         });
         shared.shouldBehaveLike('migrate to', 'up');
       });
     });
 
     describe('#down()', function () {
-      beforeEach(function (done) {
-        this.currentMigrationId = null;
-        this.task.down().complete(done);
+      beforeEach(function () {
+        return this.task.down();
       });
 
       context('where there are no performed migrations', function () {
+        beforeEach(function () {
+          this.currentMigrationId = null;
+        });
         shared.shouldBehaveLike('migrate to', 'down');
       });
 
       context('when there are some performed migrations', function () {
-        before(function (done) {
-          this.migrateTo(this.ids[3]).complete(done);
+        before(function () {
+          this.currentMigrationId = this.ids[2];
+          return this.migrateTo(this.ids[3]);
         });
         shared.shouldBehaveLike('migrate to', 'down');
       });
     });
 
     describe('#redo()', function () {
-      beforeEach(function (done) {
+      beforeEach(function () {
         this.currentMigrationId = _.last(this.ids);
-        this.task.redo().complete(done);
+        return this.task.redo();
       });
       context('when no performed migrations', function () {
         shared.shouldBehaveLike('migrate to', 'up');
       });
 
       context('when there are performed migrations', function () {
-        before(function (done) {
-          this.migrateTo(this.ids[2]).complete(done);
+        before(function () {
+          return this.migrateTo(this.ids[2]);
         });
         shared.shouldBehaveLike('migrate to', 'up');
       });
