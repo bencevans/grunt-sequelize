@@ -5,7 +5,6 @@
 
 [![Dependency Status](https://david-dm.org/bencevans/grunt-sequelize.svg)](https://david-dm.org/bencevans/grunt-sequelize)
 [![devDependency Status](https://david-dm.org/bencevans/grunt-sequelize/dev-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=devDependencies)
-[![peerDependency Status](https://david-dm.org/bencevans/grunt-sequelize/peer-status.svg)](https://david-dm.org/bencevans/grunt-sequelize#info=peerDependencies)
 
 > Sequelize migrations from Grunt
 
@@ -33,7 +32,7 @@ In your project's Gruntfile, add a section named `sequelize` to the data object 
 grunt.initConfig({
   sequelize: {
     options: {
-      migrations: 'db/migrations',
+      migrationsPath: 'db/migrations',
       config: 'db/config.json'
     }
   }
@@ -42,7 +41,7 @@ grunt.initConfig({
 
 ### Options
 
-#### options.migrations
+#### options.migrationsPath
 Type: `String`
 
 A string value that is used to location your migration files.
@@ -80,21 +79,21 @@ or
 
 #### Undo
 
-In order to migrate down the stack, use:
+In order to migrate down the latest migration, use:
 
     $ grunt sequelize:migrate:undo
 
 #### Redo
 
-Also you can redo all your migrations by running:
+Also you can redo latest migration by running:
 
     $ grunt sequelize:migrate:redo
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style.
-Add unit tests for any new or changed functionality. Validate and test your code by running [Grunt](http://gruntjs.com/)
+Add unit tests for any new or changed functionality. Validate and test your code by running
 
-    $ grunt validate
+    $ npm run lint
 
 ## Release History
 _(Nothing yet)_
