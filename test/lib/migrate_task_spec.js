@@ -7,6 +7,12 @@ var path = require('path');
 var _ = require('lodash');
 var shared = require('shared-examples-for');
 var tk = require('timekeeper');
+
+var chai = require('chai');
+chai.use(require('chai-as-promised'));
+
+var expect = chai.expect;
+
 var utils = require('../../lib/util');
 var createMigrateTask = require('../../lib/migrate_task');
 

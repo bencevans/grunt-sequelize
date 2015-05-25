@@ -26,9 +26,9 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "lint": "",
-    "test": "npm run clean && _mocha ./test/**/*_spec.js",
-    "coverage": "rm -rf coverage && istanbul cover _mocha --report lcovonly -- ./test/**/*_spec.js",
+    "lint": "eslint ./",
+    "test": "npm run lint && npm run clean && _mocha ./test/**/*_spec.js",
+    "test-coverage": "npm run lint && npm run clean && istanbul cover _mocha --report lcovonly -- ./test/**/*_spec.js",
     "coveralls": "cat coverage/lcov.info | coveralls",
     "clean": "rm -rf ./test/.tmp ./coverage"
   },
@@ -36,9 +36,8 @@
     "chai": "^2.3.0",
     "chai-as-promised": "^5.0.0",
     "coveralls": "^2.11.2",
+    "eslint": "^0.21.2",
     "grunt": "~0.4.5",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-jscs": "^1.8.0",
     "istanbul": "^0.3.14",
     "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
