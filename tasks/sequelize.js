@@ -13,7 +13,7 @@ var _ = require('lodash');
 var utils = require('../lib/util');
 var createMigrateTask = require('../lib/migrate_task');
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
   function options() {
     // node_modules/grunt-sequelize/tasks
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
     return _.extend(taskOpts, dbConfig);
   }
 
-  grunt.registerTask('sequelize:migrate', function (arg) {
+  grunt.registerTask('sequelize:migrate', function(arg) {
     var task = createMigrateTask(options());
     var done = this.async();
 
@@ -45,26 +45,27 @@ module.exports = function (grunt) {
 
     task.init()
 
-      .then(function () {
+      .then(function() {
         switch (arg) {
-          case 'up':
-            grunt.log.writeln('Running pending migrations...');
-            return task.up();
-          case 'down': /* falls through */
-          case 'undo':
-            grunt.log.writeln('Undoing last migration...');
-            return task.down();
-          case 'redo':
-            grunt.log.writeln('Redoing last migration...');
-            return task.redo();
-          default:
-            var err = new Error('Unknown task: sequelize:migrate:' + arg);
-            grunt.log.error(err);
-            throw err;
+        case 'up':
+          grunt.log.writeln('Running pending migrations...');
+          return task.up();
+        case 'down':
+          /* falls through */
+        case 'undo':
+          grunt.log.writeln('Undoing last migration...');
+          return task.down();
+        case 'redo':
+          grunt.log.writeln('Redoing last migration...');
+          return task.redo();
+        default:
+          var err = new Error('Unknown task: sequelize:migrate:' + arg);
+          grunt.log.error(err);
+          throw err;
         }
       })
 
-      .then(function () {
+      .then(function() {
         grunt.log.writeln('Done!');
       })
 
@@ -72,7 +73,7 @@ module.exports = function (grunt) {
   });
 
   // TODO: maybe we should leave this kind of functionality to scaffold generators (ex. yeoman)?
-  grunt.registerTask('sequelize:migration:create', function (name) {
+  grunt.registerTask('sequelize:migration:create', function(name) {
     var opts = options();
     var dst = path.join(opts.migrations, utils.ts() + '-' + name + '.js');
     grunt.file.mkdir(path.dirname(dst));
