@@ -26,31 +26,23 @@ describe('Main module', function () {
     });
 
     it('loads a static JSON configuration', function() {
-      var stubGruntConfigGet = sinon.stub(grunt.config, 'get').returns({
-        config: path.join(__dirname, '../../assets/config.json')
-      });
-      var config = loadConfig(grunt);
+      var config = loadConfig(grunt, path.join(__dirname, '../../assets/config.json'));
       expect(config).to.eql({
         user: 'user',
         password: 'password',
         database: 'test',
         port: 0
       });
-      stubGruntConfigGet.restore();
     });
 
     it('loads a dynamic configuration', function() {
-      var stubGruntConfigGet = sinon.stub(grunt.config, 'get').returns({
-        config: path.join(__dirname, '../../assets/config.js')
-      });
-      var config = loadConfig(grunt);
+      var config = loadConfig(grunt, path.join(__dirname, '../../assets/config.js'));
       expect(config).to.eql({
         user: 'user',
         password: 'password',
         database: 'db',
         dialect: 'postgres'
       });
-      stubGruntConfigGet.restore();
     });
 
   });

@@ -13,17 +13,22 @@ var _ = require('lodash');
 var utils = require('../lib/util');
 var createMigrateTask = require('../lib/migrate_task');
 
-function loadConfig(grunt) {
+// get options from Gruntfile
+function getOptions(grunt) {
   // node_modules/grunt-sequelize/tasks
   var dbPath = path.normalize(path.join(__dirname, '../../../db'));
-  var env = process.env.NODE_ENV || 'development';
 
-  var taskOpts = _.defaults(grunt.config.get('sequelize.options'), {
+  return _.defaults(grunt.config.get('sequelize.options'), {
     config: path.join(dbPath, 'config.json'),
     migrationsPath: path.join(dbPath, 'migrations')
   });
+}
 
-  var configFile = taskOpts.config.toLowerCase();
+// load database configuration from file specified in options
+function loadConfig(grunt, configFile) {
+  configFile = configFile.toLowerCase();
+
+  var env = process.env.NODE_ENV || 'development';
 
   if (_.endsWith(configFile, '.json')) {
     return grunt.file.readJSON(configFile)[env];
@@ -38,9 +43,11 @@ function loadConfig(grunt) {
 module.exports = function(grunt) {
 
   function options() {
-    var dbConfig = loadConfig(grunt);
+    var taskOpts = getOptions(grunt);
+
+    var dbConfig = loadConfig(grunt, taskOpts.config);
     if (!dbConfig) {
-      var err = new Error('No configuration for NODE_ENV="' + env + '" found in the ' + taskOpts.config);
+      var err = new Error('No configuration for NODE_ENV="' + env + '" found in ' + taskOpts.config);
       grunt.log.error(err);
       throw err;
     }
