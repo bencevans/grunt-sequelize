@@ -52,7 +52,7 @@
     "gruntplugin"
   ],
   "dependencies": {
-    "lodash": "^3.9.2",
+    "lodash": "^4.17.15",
     "moment": "^2.10.3"
   }
 }
