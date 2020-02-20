@@ -103,5 +103,5 @@ Add unit tests for any new or changed functionality. Validate and test your code
 
 | Version | Description |
 | --- | --- |
-| 4.0.1 | Support dynamic configuration |
+| 4.1.0 | Support dynamic configuration |
 | 4.0.0 | Original version |
