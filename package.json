@@ -2,6 +2,7 @@
   "name": "grunt-sequelize",
   "description": "Sequelize migrations from Grunt",
   "version": "4.1.0",
+  "license": "MIT",
   "homepage": "https://github.com/bencevans/grunt-sequelize",
   "author": {
     "name": "Ben Evans",
@@ -20,15 +21,9 @@
   "bugs": {
     "url": "https://github.com/bencevans/grunt-sequelize/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/bencevans/grunt-sequelize/blob/master/LICENSE-MIT"
-    }
-  ],
   "main": "tasks/sequelize.js",
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 8.10.0"
   },
   "scripts": {
     "lint": "eslint ./",
