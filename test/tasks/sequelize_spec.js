@@ -26,7 +26,7 @@ describe('Main module', function () {
     });
 
     it('loads a static JSON configuration', function() {
-      var config = loadConfig(grunt, path.join(__dirname, '../../assets/config.json'));
+      var config = loadConfig(grunt, path.normalize(path.join(__dirname, '../../assets/config.json')));
       expect(config).to.eql({
         user: 'user',
         password: 'password',
@@ -36,7 +36,7 @@ describe('Main module', function () {
     });
 
     it('loads a dynamic configuration', function() {
-      var config = loadConfig(grunt, path.join(__dirname, '../../assets/config.js'));
+      var config = loadConfig(grunt, path.normalize(path.join(__dirname, '../../assets/config.js')));
       expect(config).to.eql({
         user: 'user',
         password: 'password',
