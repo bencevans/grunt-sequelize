@@ -3,3 +3,4 @@ node_modules
 logs
 coverage
 .idea
+.nyc_output

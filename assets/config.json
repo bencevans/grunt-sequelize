@@ -1,0 +1,8 @@
+{
+  "development": {
+    "user": "user",
+    "password": "password",
+    "database": "test",
+    "port": 0
+  }
+}

@@ -31,7 +31,7 @@ afterEach('Roll back all migrations', function () {
   return this.migrator.executed()
     .bind(this.migrator)
     .then(function (executed) {
-      return this.down(_.pluck(executed, 'file'));
+      return this.down(_.map(executed, 'file'));
     });
 });
 

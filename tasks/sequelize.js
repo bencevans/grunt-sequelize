@@ -13,21 +13,41 @@ var _ = require('lodash');
 var utils = require('../lib/util');
 var createMigrateTask = require('../lib/migrate_task');
 
-module.exports = function (grunt) {
+// get options from Gruntfile
+function getOptions(grunt) {
+  // node_modules/grunt-sequelize/tasks
+  var dbPath = path.normalize(path.join(__dirname, '../../../db'));
+
+  return _.defaults(grunt.config.get('sequelize.options'), {
+    config: path.join(dbPath, 'config.json'),
+    migrationsPath: path.join(dbPath, 'migrations')
+  });
+}
+
+// load database configuration from file specified in options
+function loadConfig(grunt, configFile) {
+  configFile = configFile.toLowerCase();
+
+  var env = process.env.NODE_ENV || 'development';
+
+  if (_.endsWith(configFile, '.json')) {
+    return grunt.file.readJSON(configFile)[env];
+  } else if (_.endsWith(configFile, '.js')) {
+    var config = require(configFile);
+    return config[env];
+  }
+
+  return null;
+}
+
+module.exports = function(grunt) {
 
   function options() {
-    // node_modules/grunt-sequelize/tasks
-    var dbPath = path.normalize(path.join(__dirname, '../../../db'));
-    var env = process.env.NODE_ENV || 'development';
+    var taskOpts = getOptions(grunt);
 
-    var taskOpts = _.defaults(grunt.config.get('sequelize.options'), {
-      config: path.join(dbPath, 'config.json'),
-      migrationsPath: path.join(dbPath, 'migrations')
-    });
-
-    var dbConfig = grunt.file.readJSON(taskOpts.config)[env];
+    var dbConfig = loadConfig(grunt, taskOpts.config);
     if (!dbConfig) {
-      var err = new Error('No configuration for NODE_ENV="' + env + '" found in the ' + taskOpts.config);
+      var err = new Error('No configuration for NODE_ENV="' + env + '" found in ' + taskOpts.config);
       grunt.log.error(err);
       throw err;
     }
@@ -37,42 +57,37 @@ module.exports = function (grunt) {
     return _.extend(taskOpts, dbConfig);
   }
 
-  grunt.registerTask('sequelize:migrate', function (arg) {
+  grunt.registerTask('sequelize:migrate', function(arg) {
     var task = createMigrateTask(options());
     var done = this.async();
 
     arg = arg || 'up';
 
-    task.init()
-
-      .then(function () {
-        switch (arg) {
-          case 'up':
-            grunt.log.writeln('Running pending migrations...');
-            return task.up();
-          case 'down': /* falls through */
-          case 'undo':
-            grunt.log.writeln('Undoing last migration...');
-            return task.down();
-          case 'redo':
-            grunt.log.writeln('Redoing last migration...');
-            return task.redo();
-          default:
-            var err = new Error('Unknown task: sequelize:migrate:' + arg);
-            grunt.log.error(err);
-            throw err;
-        }
-      })
-
-      .then(function () {
-        grunt.log.writeln('Done!');
-      })
-
-      .complete(done);
+    (function() {
+      switch (arg) {
+      case 'up':
+        grunt.log.writeln('Running pending migrations...');
+        return task.up();
+      case 'down':
+        /* falls through */
+      case 'undo':
+        grunt.log.writeln('Undoing last migration...');
+        return task.down();
+      case 'redo':
+        grunt.log.writeln('Redoing last migration...');
+        return task.redo();
+      default:
+        var err = new Error('Unknown task: sequelize:migrate:' + arg);
+        grunt.log.error(err);
+        throw err;
+      }
+    })().then(function() {
+      grunt.log.writeln('Done!');
+    }).then(done);
   });
 
   // TODO: maybe we should leave this kind of functionality to scaffold generators (ex. yeoman)?
-  grunt.registerTask('sequelize:migration:create', function (name) {
+  grunt.registerTask('sequelize:migration:create', function(name) {
     var opts = options();
     var dst = path.join(opts.migrations, utils.ts() + '-' + name + '.js');
     grunt.file.mkdir(path.dirname(dst));

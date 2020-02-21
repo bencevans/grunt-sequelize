@@ -49,7 +49,7 @@ A string value that is used to location your migration files.
 #### options.config
 Type: `String`
 
-A string value that is used to locate your sequelize db config.
+A string value that is used to locate your Sequelize connection parameters and credentials. Can be static JSON or JavaScript.
 
 ##### Example of config.json
 
@@ -62,6 +62,10 @@ A string value that is used to locate your sequelize db config.
   }
 }
 ```
+
+##### Dynamic configuration
+
+If `options.string` specifies a JavaScript file, that file should export a function that returns a configuration object.
 
 ### Running tasks
 
@@ -96,4 +100,8 @@ Add unit tests for any new or changed functionality. Validate and test your code
     $ npm run lint
 
 ## Release History
-_(Nothing yet)_
+
+| Version | Description |
+| --- | --- |
+| 4.1.0 | Support dynamic configuration |
+| 4.0.0 | Original version |
